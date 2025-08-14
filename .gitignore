@@ -1,0 +1,19 @@
+# Rust build artifacts
+/target/
+/Cargo.lock
+
+# Blaze tracker data
+.blaze/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
