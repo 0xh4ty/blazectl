@@ -215,9 +215,9 @@ fn render_md(
     writeln!(s, "## Field Report")?;
     writeln!(s)?;
 
-    writeln!(s, "**Updated (UTC):** {}", iso(now))?;
-    writeln!(s, "**All-time:** {}", hm(all_time.total()))?;
-    writeln!(s, "**Last 30d:** {}  |  **Last 7d:** {}", hm(last30.total()), hm(last7.total()))?;
+    writeln!(s, "- **Updated (UTC):** {}", iso(now))?;
+    writeln!(s, "- **All-time:** {}", hm(all_time.total()))?;
+    writeln!(s, "- **Last 30d:** {}  |  **Last 7d:** {}", hm(last30.total()), hm(last7.total()))?;
     writeln!(s)?;
 
     // Per-tag 30d
