@@ -41,10 +41,7 @@ pub fn append_entry(e: &Entry) -> Result<()> {
     let line = serde_json::to_string(e)? + "\n";
     f.write_all(line.as_bytes())?;
     f.flush()?;
-    // fsync not strictly needed for v0; add if you want stronger durability:
+    // If you want stronger durability, uncomment:
     // f.sync_all()?;
-    // best-effort symlink
-    let _ = std::fs::remove_file(".blaze/track-current.jsonl");
-    let _ = std::os::unix::fs::symlink(&path, ".blaze/track-current.jsonl");
     Ok(())
 }
