@@ -2,9 +2,6 @@
 /target/
 /Cargo.lock
 
-# Blaze tracker data
-.blaze/
-
 # OS-specific files
 .DS_Store
 Thumbs.db
