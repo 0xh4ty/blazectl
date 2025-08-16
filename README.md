@@ -6,32 +6,32 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-08-15T08:12:50.36243856Z
-- **All-time:** 4h 14m
-- **Last 30d:** 4h 14m  |  **Last 7d:** 4h 14m
+- **Updated (UTC):** 2025-08-16T09:22:45.784737762Z
+- **All-time:** 9h 54m
+- **Last 30d:** 9h 54m  |  **Last 7d:** 9h 54m
 
 ## Per-tag (last 30d)
-- Train: 4h 14m
+- Train: 9h 54m
 - Battle: 0h 00m
 
 ## Daily (last 7 days)
 | Date       | Train | Battle | Total |
 |------------|-------|--------|-------|
-| 2025-08-09 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-08-10 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-08-11 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-08-12 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-08-13 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-08-14 | 2h 08m | 0h 00m | 2h 08m |
-| 2025-08-15 | 2h 05m | 0h 00m | 2h 05m |
+| 2025-08-15 | 4h 13m | 0h 00m | 4h 13m |
+| 2025-08-16 | 3h 32m | 0h 00m | 3h 32m |
 
 ## Streaks
-- Any: 2 days
-- Train: 2 days
+- Any: 3 days
+- Train: 3 days
 - Battle: 0 days
 
 ## Activity (last 30d)
-▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██ (total minutes per day)
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▅█▇ (total minutes per day)
 
 ## Installation
 1. **Install Rust**
