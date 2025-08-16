@@ -6,9 +6,10 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-08-16T09:22:45.784737762Z
-- **All-time:** 9h 54m
-- **Last 30d:** 9h 54m  |  **Last 7d:** 9h 54m
+- **Updated (UTC):** 2025-08-16T09:30:50.477222465Z
+- **All-time (Total):** 9h 54m
+- **All-time (Train):** 9h 54m
+- **All-time (Battle):** 0h 00m
 
 ## Per-tag (last 30d)
 - Train: 9h 54m

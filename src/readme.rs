@@ -187,8 +187,8 @@ fn sparkline_30d(per_day: &HashMap<Date, Totals>, last30: &[Date]) -> String {
 fn render_md(
     now: OffsetDateTime,
     all_time: Totals,
-    last7: &Totals,
-    last30: &Totals,
+    _last7: &Totals,
+    _last30: &Totals,
     last30_tag: &Totals,
     daily7: &[(Date, Totals)],
     streak_any: i32,
@@ -216,8 +216,9 @@ fn render_md(
     writeln!(s)?;
 
     writeln!(s, "- **Updated (UTC):** {}", iso(now))?;
-    writeln!(s, "- **All-time:** {}", hm(all_time.total()))?;
-    writeln!(s, "- **Last 30d:** {}  |  **Last 7d:** {}", hm(last30.total()), hm(last7.total()))?;
+    writeln!(s, "- **All-time (Total):** {}", hm(all_time.total()))?;
+    writeln!(s, "- **All-time (Train):** {}", hm(all_time.train))?;
+    writeln!(s, "- **All-time (Battle):** {}", hm(all_time.battle))?;
     writeln!(s)?;
 
     // Per-tag 30d
