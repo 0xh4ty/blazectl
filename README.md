@@ -6,33 +6,33 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-09-13T16:07:31.153114952Z
-- **All-time (Total):** 87h 57m
-- **All-time (Train):** 87h 57m
+- **Updated (UTC):** 2025-09-15T06:03:41.52298068Z
+- **All-time (Total):** 95h 00m
+- **All-time (Train):** 95h 00m
 - **All-time (Battle):** 0h 00m
 
 ## Per-tag (last 30d)
-- Train: 85h 48m
+- Train: 83h 46m
 - Battle: 0h 00m
 
 ## Daily (last 7 days)
 | Date       | Train | Battle | Total |
 |------------|-------|--------|-------|
-| 2025-09-07 | 0h 00m | 0h 00m | 0h 00m |
-| 2025-09-08 | 0h 39m | 0h 00m | 0h 39m |
 | 2025-09-09 | 1h 38m | 0h 00m | 1h 38m |
 | 2025-09-10 | 0h 00m | 0h 00m | 0h 00m |
 | 2025-09-11 | 5h 14m | 0h 00m | 5h 14m |
 | 2025-09-12 | 7h 17m | 0h 00m | 7h 17m |
-| 2025-09-13 | 1h 41m | 0h 00m | 1h 41m |
+| 2025-09-13 | 6h 45m | 0h 00m | 6h 45m |
+| 2025-09-14 | 0h 51m | 0h 00m | 0h 51m |
+| 2025-09-15 | 1h 08m | 0h 00m | 1h 08m |
 
 ## Streaks
-- Any: 3 days
-- Train: 3 days
+- Any: 5 days
+- Train: 5 days
 - Battle: 0 days
 
 ## Activity (last 30d)
-▄▅▁▆▄▄▁█▁▃▁▆▅▃▂▅▆▂▂▄▁▁▁▁▂▂▁▅▇▂ (total minutes per day)
+▁▆▄▄▁█▁▃▁▆▅▃▂▅▆▂▂▄▁▁▁▁▂▂▁▅▇▆▂▂ (total minutes per day)
 
 ## Installation
 1. **Install Rust**
