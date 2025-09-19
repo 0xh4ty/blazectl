@@ -5,6 +5,7 @@ use time::{Duration, OffsetDateTime, Date, format_description::well_known::Rfc33
 use crate::util::{now_utc, iso};
 
 use plotters::prelude::*; // SVG renderer
+use plotters::element::PathElement;
 
 #[derive(Default, Clone, Copy)]
 pub(crate) struct Totals { train: i64, battle: i64 }
@@ -235,12 +236,8 @@ fn ascii_area_30d(per_day: &HashMap<Date, Totals>, last30: &[Date], height: usiz
     out
 }
 
-/// Render activity area chart to an SVG file using plotters.
-///
-/// - `per_day` as before
-/// - `dates` ordered oldest..newest
-/// - `out_path` e.g. "assets/activity.svg"
-/// - `width`/`height` in pixels
+/// Render activity area chart: raw daily area+line (blue) + single long-trend curve (grey)
+/// Trend control points are coarse-bucketed (TREND_WINDOW_DAYS) and extrapolated to chart edges.
 pub(crate) fn render_activity_svg(
     per_day: &HashMap<Date, Totals>,
     dates: &[Date],
@@ -248,73 +245,191 @@ pub(crate) fn render_activity_svg(
     width: u32,
     height: u32,
 ) -> anyhow::Result<()> {
-    // prepare values as f64 minutes
+    // Tunables
+    const TREND_WINDOW_DAYS: usize = 7; // 15..20 => single large hump over ~15-20 days
+    const CHAIKIN_ITERS_ON_TREND: usize = 0; // set >0 to slightly round coarse control points
+    const TREND_SAMPLES_PER_SEGMENT: usize = 50; // dense interpolation -> smooth curve
+
+    // raw per-day minutes
     let vals: Vec<f64> = dates.iter()
         .map(|d| per_day.get(d).map(|t| (minutes(t.total()) as f64)).unwrap_or(0.0))
         .collect();
-
-    // create a minimal placeholder when empty
-    if vals.is_empty() {
+    let n = vals.len();
+    if n == 0 {
         let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
         root.fill(&WHITE)?;
         root.present()?;
         return Ok(());
     }
 
-    // compute y-axis domain with small padding
+    // y domain (based on raw values)
     let min_v = vals.iter().cloned().fold(f64::INFINITY, f64::min);
     let max_v = vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
     let (y0, y1) = if (max_v - min_v).abs() < std::f64::EPSILON {
         (0.0, max_v.max(1.0))
     } else {
-        let pad = (max_v - min_v) * 0.07; // 7% padding
+        let pad = (max_v - min_v) * 0.07;
         ((min_v - pad).max(0.0), max_v + pad)
     };
 
     let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    // IMPORTANT FIX: use the full index range 0..vals.len()
-    // (previous code used vals.len().saturating_sub(1) which produced a zero-length range
-    // when vals.len() == 1 and caused internal overflow in plotters)
-    let x_upper = vals.len(); // >= 1 here
+    // raw points (integer x positions)
+    let points_raw: Vec<(f64,f64)> = vals.iter().enumerate().map(|(i,&v)|(i as f64, v)).collect();
+    let x_upper_f = points_raw.len() as f64;
+
+    // chart on f64 x-axis so overlay curves can be fractional
     let mut chart = ChartBuilder::on(&root)
         .margin(8)
         .x_label_area_size(0)
         .y_label_area_size(40)
         .right_y_label_area_size(0)
-        .build_cartesian_2d(0usize..x_upper, y0..y1)?;
+        .build_cartesian_2d(0f64..x_upper_f, y0..y1)?;
 
-    // keep mesh minimal: no vertical grid, light y labels
     chart
         .configure_mesh()
         .disable_mesh()
         .y_desc("minutes / day")
-        // avoid too many x labels for wide ranges; show a few ticks instead
-        .x_labels((x_upper / 10).max(2))
+        .x_labels((points_raw.len() / 10).max(2))
         .draw()?;
 
-    let points: Vec<(usize, f64)> = vals.iter().enumerate().map(|(i, &v)| (i, v)).collect();
+    // draw raw area + line + small dots (blue)
+    let blue_fill = RGBAColor(70, 130, 180, 0.12);
+    let blue_stroke = RGBColor(70, 130, 180).stroke_width(2);
 
-    // area fill with light alpha (0.15)
-    chart.draw_series(AreaSeries::new(
-        points.clone(),
-        0.0,
-        RGBAColor(70, 130, 180, 0.15),
-    ))?;
+    chart.draw_series(AreaSeries::new(points_raw.clone(), 0.0, blue_fill))?;
+    chart.draw_series(LineSeries::new(points_raw.clone().into_iter(), blue_stroke))?;
+    chart.draw_series(points_raw.iter().map(|&(x,y)| Circle::new((x,y), 1, RGBColor(70,130,180).filled())))?;
 
-    // stroke line (pass ShapeStyle value, not &ShapeStyle)
-    chart.draw_series(LineSeries::new(
-        points.clone().into_iter(),
-        RGBColor(70, 130, 180).stroke_width(2),
-    ))?;
+    // -------- build coarse trend points by bucketing over TREND_WINDOW_DAYS --------
+    let mut trend_pts: Vec<(f64,f64)> = Vec::new();
+    let mut i = 0usize;
+    while i < n {
+        let end = (i + TREND_WINDOW_DAYS).min(n);
+        let slice = &vals[i..end];
+        let sum: f64 = slice.iter().sum();
+        let avg = if slice.is_empty() { 0.0 } else { sum / (slice.len() as f64) };
+        // center index for bucket -> fractional x
+        let center = (i as f64 + (end - 1) as f64) / 2.0;
+        trend_pts.push((center, avg));
+        i = end;
+    }
 
-    // small dots for data points (pass ShapeStyle value)
-    chart.draw_series(
-        vals.iter().enumerate().map(|(i, &v)| {
-            Circle::new((i, v), 1, RGBColor(70, 130, 180).filled())
-        })
-    )?;
+    // fallback: denser buckets if too few trend points
+    if trend_pts.len() < 3 && n >= 3 {
+        let mut alt: Vec<(f64,f64)> = Vec::new();
+        let step = (TREND_WINDOW_DAYS as f64 / 2.0).ceil() as usize;
+        let mut j = 0usize;
+        while j < n {
+            let end = (j + step).min(n);
+            let slice = &vals[j..end];
+            let sum: f64 = slice.iter().sum();
+            let avg = if slice.is_empty() { 0.0 } else { sum / (slice.len() as f64) };
+            let center = (j as f64 + (end - 1) as f64) / 2.0;
+            alt.push((center, avg));
+            j = end;
+        }
+        if alt.len() >= trend_pts.len() { trend_pts = alt; }
+    }
+
+    // -------- extrapolate endpoints so trend spans full x-range --------
+    // We extrapolate linearly from the first/last coarse segments to x=0 and x=n-1.
+    let x_left = 0.0f64;
+    let x_right = (n - 1) as f64;
+
+    if trend_pts.is_empty() {
+        trend_pts.push((x_left, vals[0]));
+        trend_pts.push((x_right, vals[n-1]));
+    } else {
+        // LEFT: if first point is not at x_left, extrapolate using first two points (or use raw)
+        if trend_pts[0].0 > x_left {
+            if trend_pts.len() >= 2 {
+                let p0 = trend_pts[0];
+                let p1 = trend_pts[1];
+                let dx = p1.0 - p0.0;
+                let slope = if dx.abs() < 1e-9 { 0.0 } else { (p1.1 - p0.1) / dx };
+                let y_at_left = p0.1 + slope * (x_left - p0.0);
+                trend_pts.insert(0, (x_left, y_at_left));
+            } else {
+                trend_pts.insert(0, (x_left, vals[0]));
+            }
+        } else {
+            trend_pts[0].0 = x_left;
+        }
+
+        // RIGHT: if last point is not at x_right, extrapolate using last two points
+        let last_idx = trend_pts.len() - 1;
+        if trend_pts[last_idx].0 < x_right {
+            if trend_pts.len() >= 2 {
+                let p_last = trend_pts[last_idx];
+                let p_prev = trend_pts[last_idx - 1];
+                let dx = p_last.0 - p_prev.0;
+                let slope = if dx.abs() < 1e-9 { 0.0 } else { (p_last.1 - p_prev.1) / dx };
+                let y_at_right = p_last.1 + slope * (x_right - p_last.0);
+                trend_pts.push((x_right, y_at_right));
+            } else {
+                trend_pts.push((x_right, vals[n-1]));
+            }
+        } else {
+            // snap last x to exact right index
+            trend_pts[last_idx].0 = x_right;
+        }
+    }
+
+    // optional: slight Chaikin rounding on coarse control points (usually not necessary)
+    fn chaikin_iter(pts: &[(f64,f64)]) -> Vec<(f64,f64)> {
+        if pts.len() < 2 { return pts.to_vec(); }
+        let mut next = Vec::with_capacity(pts.len()*2);
+        for k in 0..(pts.len()-1) {
+            let p0 = pts[k];
+            let p1 = pts[k+1];
+            next.push((0.75*p0.0 + 0.25*p1.0, 0.75*p0.1 + 0.25*p1.1));
+            next.push((0.25*p0.0 + 0.75*p1.0, 0.25*p0.1 + 0.75*p1.1));
+        }
+        next
+    }
+    for _ in 0..CHAIKIN_ITERS_ON_TREND {
+        trend_pts = chaikin_iter(&trend_pts);
+        if trend_pts.len() > 2000 {
+            trend_pts = trend_pts.into_iter().enumerate().filter(|(idx,_)| idx%2==0).map(|(_,p)| p).collect();
+        }
+    }
+
+    // dense Catmull-Rom interpolation for a smooth single trend curve
+    fn catmull_rom_spline(pts: &[(f64,f64)], samples: usize) -> Vec<(f64,f64)> {
+        if pts.len() < 2 { return pts.to_vec(); }
+        let mut out = Vec::with_capacity(pts.len() * samples + 1);
+        let idx = |i:isize, max:usize| -> usize {
+            if i < 0 { 0 } else if (i as usize) >= max { max - 1 } else { i as usize }
+        };
+        for ii in 0..(pts.len()-1) {
+            let p0 = pts[idx(ii as isize - 1, pts.len())];
+            let p1 = pts[ii];
+            let p2 = pts[ii+1];
+            let p3 = pts[idx(ii as isize + 2, pts.len())];
+            for s in 0..samples {
+                let t = s as f64 / (samples as f64);
+                let t2 = t*t; let t3 = t2*t;
+                let x = 0.5 * (2.0*p1.0 + (-p0.0 + p2.0)*t + (2.0*p0.0 - 5.0*p1.0 + 4.0*p2.0 - p3.0)*t2 + (-p0.0 + 3.0*p1.0 - 3.0*p2.0 + p3.0)*t3);
+                let y = 0.5 * (2.0*p1.1 + (-p0.1 + p2.1)*t + (2.0*p0.1 - 5.0*p1.1 + 4.0*p2.1 - p3.1)*t2 + (-p0.1 + 3.0*p1.1 - 3.0*p2.1 + p3.1)*t3);
+                out.push((x,y));
+            }
+        }
+        if let Some(last) = pts.last() { out.push(*last); }
+        out
+    }
+
+    let trend_curve = if trend_pts.len() >= 2 {
+        catmull_rom_spline(&trend_pts, TREND_SAMPLES_PER_SEGMENT)
+    } else {
+        trend_pts.clone()
+    };
+
+    // draw the big trend curve thick and semi-transparent grey (overlay)
+    let trend_style = RGBColor(210, 20, 20).stroke_width(4);
+    let trend_path = PathElement::new(trend_curve.clone(), trend_style);
+    chart.draw_series(std::iter::once(trend_path))?;
 
     root.present()?;
     Ok(())
@@ -373,13 +488,6 @@ fn render_md(
         )?;
     }
     writeln!(s)?;
-
-    // Streaks
-    // writeln!(s, "## Streaks")?;
-    // writeln!(s, "- Any: {} days", streak_any)?;
-    // writeln!(s, "- Train: {} days", streak_train)?;
-    // writeln!(s, "- Battle: {} days", streak_battle)?;
-    // writeln!(s)?;
 
     // Image-embedded Activity Graph (75 days)
     writeln!(s, "## Activity Graph")?;
