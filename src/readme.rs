@@ -63,7 +63,7 @@ pub fn render_all() -> Result<()> {
     let streak_train = streak_days(&per_day, today, |t| t.train > 0);
     let streak_battle = streak_days(&per_day, today, |t| t.battle > 0);
 
-    let sparkline = sparkline_30d(&per_day, &last30_dates);
+    let ascii_area = ascii_area_30d(&per_day, &last30_dates, 12);
 
     let out = render_md(
         now,
@@ -75,7 +75,7 @@ pub fn render_all() -> Result<()> {
         streak_any,
         streak_train,
         streak_battle,
-        &sparkline,
+        &ascii_area,
     )?;
 
     fs::write("README.md", out)?;
@@ -160,28 +160,71 @@ fn hm(secs: i64) -> String {
 
 fn minutes(secs: i64) -> i64 { secs / 60 }
 
-fn sparkline_30d(per_day: &HashMap<Date, Totals>, last30: &[Date]) -> String {
-    const BLOCKS: &[char] = &['▁','▂','▃','▄','▅','▆','▇','█'];
+fn ascii_area_30d(per_day: &HashMap<Date, Totals>, last30: &[Date], height: usize) -> String {
+    if last30.is_empty() || height == 0 {
+        return String::new();
+    }
+
+    // Gather values (minutes per day)
     let vals: Vec<i64> = last30.iter()
         .map(|d| per_day.get(d).map(|t| minutes(t.total())).unwrap_or(0))
         .collect();
 
+    // Find min/max for normalization
     let (min_v, max_v) = match (vals.iter().min(), vals.iter().max()) {
         (Some(a), Some(b)) => (*a, *b),
         _ => (0, 0),
     };
 
+    // Edge: all values equal -> render single baseline or repeated low row
     if max_v == min_v {
-        return std::iter::repeat(BLOCKS[0]).take(vals.len()).collect();
+        // produce a single-line flat chart (centered) as fallback
+        let line: String = vals.iter().map(|_| '▁').collect();
+        return line;
     }
 
-    vals.into_iter()
-        .map(|v| {
-            let norm = (v - min_v) as f64 / (max_v - min_v) as f64;
-            let idx = (norm * ((BLOCKS.len() - 1) as f64)).round() as usize;
-            BLOCKS[idx]
-        })
-        .collect()
+    // Normalize into levels 0..(height-1)
+    let range = (max_v - min_v) as f64;
+    let levels: Vec<usize> = vals.into_iter().map(|v| {
+        let norm = (v - min_v) as f64 / range; // 0.0..1.0
+        // Multiply by (height-1) so top row is height-1
+        let lvl = (norm * ((height - 1) as f64)).round() as isize;
+        // clamp (safety)
+        lvl.max(0).min((height - 1) as isize) as usize
+    }).collect();
+
+    // Build rows top-down
+    let mut rows: Vec<String> = Vec::with_capacity(height);
+    for row in (0..height).rev() {
+        let mut line = String::with_capacity(levels.len());
+        for &lvl in &levels {
+            // Use an "area fill" style: fill any cell where lvl >= row
+            if lvl >= row {
+                line.push('█'); // visible block; change to '▓' / '#' etc. if you prefer
+            } else {
+                line.push(' ');
+            }
+        }
+        rows.push(line);
+    }
+
+    // Optionally append a simple baseline (x-axis) with ticks for readability
+    let mut baseline = String::with_capacity(levels.len());
+    for (i, _) in rows[0].chars().enumerate() {
+        // mark every 5th column for rough tick; tune as needed
+        if i % 5 == 0 {
+            baseline.push('|');
+        } else {
+            baseline.push('-');
+        }
+    }
+
+    // Combine: rows + baseline
+    let mut out = rows.join("\n");
+    out.push('\n');
+    out.push_str(&baseline);
+
+    out
 }
 
 fn render_md(
@@ -194,7 +237,7 @@ fn render_md(
     streak_any: i32,
     streak_train: i32,
     streak_battle: i32,
-    sparkline: &str,
+    ascii_area: &str,
 ) -> anyhow::Result<String> {
     use std::fmt::Write;
     let version = env!("CARGO_PKG_VERSION");
@@ -249,9 +292,9 @@ fn render_md(
     writeln!(s, "- Battle: {} days", streak_battle)?;
     writeln!(s)?;
 
-    // Sparkline
+    // ASCII area
     writeln!(s, "## Activity (last 30d)")?;
-    writeln!(s, "{} (total minutes per day)", sparkline)?;
+    writeln!(s, "{} (total minutes per day)", ascii_area)?;
     writeln!(s)?;
 
     // Installation (clear steps)
