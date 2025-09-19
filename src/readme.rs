@@ -23,6 +23,7 @@ pub fn render_all() -> Result<()> {
     let today = now.date();
     let last7_dates = days_back(today, 7);
     let last30_dates = days_back(today, 30);
+    let last75_dates = days_back(today, 75);
 
     let entries = read_all_entries()?;
 
@@ -63,7 +64,7 @@ pub fn render_all() -> Result<()> {
     let streak_train = streak_days(&per_day, today, |t| t.train > 0);
     let streak_battle = streak_days(&per_day, today, |t| t.battle > 0);
 
-    let ascii_area = ascii_area_30d(&per_day, &last30_dates, 12);
+    let ascii_area = ascii_area_30d(&per_day, &last75_dates, 12);
 
     let out = render_md(
         now,
@@ -293,7 +294,7 @@ fn render_md(
     writeln!(s)?;
 
     // ASCII area
-    writeln!(s, "## Activity (last 30d)")?;
+    writeln!(s, "## Activity Graph")?;
 
     writeln!(s, "```text")?;
     writeln!(s, "{}", ascii_area)?;
