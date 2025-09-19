@@ -294,8 +294,13 @@ fn render_md(
 
     // ASCII area
     writeln!(s, "## Activity (last 30d)")?;
-    writeln!(s, "{} (total minutes per day)", ascii_area)?;
-    writeln!(s)?;
+
+    writeln!(s, "```text")?;
+    writeln!(s, "{}", ascii_area)?;
+    writeln!(s, "```")?;
+
+// add a short caption below the block (outside code block)
+writeln!(s, "(total minutes per day)")?;
 
     // Installation (clear steps)
     writeln!(s, "## Installation")?;

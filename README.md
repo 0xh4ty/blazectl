@@ -6,7 +6,7 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-09-19T19:22:17.034703778Z
+- **Updated (UTC):** 2025-09-19T19:42:14.970823008Z
 - **All-time (Total):** 130h 44m
 - **All-time (Train):** 130h 44m
 - **All-time (Battle):** 0h 00m
@@ -32,6 +32,7 @@
 - Battle: 0 days
 
 ## Activity (last 30d)
+```text
                           █   
                           █   
                           █   
@@ -44,8 +45,9 @@
  █ █ ███ ██  █       ███ █████
  ███ █████████    ██ █████████
 ██████████████████████████████
-|----|----|----|----|----|---- (total minutes per day)
-
+|----|----|----|----|----|----
+```
+(total minutes per day)
 ## Installation
 1. **Install Rust**
    ```bash
