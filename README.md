@@ -6,7 +6,7 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-09-19T19:51:07.616396728Z
+- **Updated (UTC):** 2025-09-19T20:14:06.73314885Z
 - **All-time (Total):** 130h 44m
 - **All-time (Train):** 130h 44m
 - **All-time (Battle):** 0h 00m
@@ -32,22 +32,9 @@
 - Battle: 0 days
 
 ## Activity Graph
-```text
-                                                                       █   
-                                                                       █   
-                                                                       █   
-                                              █                        █ █ 
-                                              █                        █ █ 
-                                          █   █        █           ██  █ █ 
-                                          █   █   █    █           ██  ███ 
-                                       ██ █   █   ██  ██  █       ███ █████
-                                       ██ ███ █   ██  ██  █       ███ █████
-                                      ███ ███ █ █ ███ ██  █       ███ █████
-                                      ███ ███ ███ █████████    ██ █████████
-███████████████████████████████████████████████████████████████████████████
-|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----
-```
-(total minutes per day)
+![Activity Graph](assets/activity.svg)
+(total minutes per day — last 75 days)
+
 ## Installation
 1. **Install Rust**
    ```bash

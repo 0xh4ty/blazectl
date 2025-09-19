@@ -4,8 +4,10 @@ use time::{Duration, OffsetDateTime, Date, format_description::well_known::Rfc33
 
 use crate::util::{now_utc, iso};
 
+use plotters::prelude::*; // SVG renderer
+
 #[derive(Default, Clone, Copy)]
-struct Totals { train: i64, battle: i64 }
+pub(crate) struct Totals { train: i64, battle: i64 }
 impl Totals {
     fn add(&mut self, tag: &str, secs: i64) {
         match tag {
@@ -64,7 +66,12 @@ pub fn render_all() -> Result<()> {
     let streak_train = streak_days(&per_day, today, |t| t.train > 0);
     let streak_battle = streak_days(&per_day, today, |t| t.battle > 0);
 
+    // keep ASCII generator available (unused in README but handy)
     let ascii_area = ascii_area_30d(&per_day, &last75_dates, 12);
+
+    // generate SVG asset (scales nicely on mobile/GitHub)
+    let _ = std::fs::create_dir_all("assets")?;
+    render_activity_svg(&per_day, &last75_dates, "assets/activity.svg", 900, 240)?;
 
     let out = render_md(
         now,
@@ -76,7 +83,7 @@ pub fn render_all() -> Result<()> {
         streak_any,
         streak_train,
         streak_battle,
-        &ascii_area,
+        &ascii_area, // still passed for compatibility
     )?;
 
     fs::write("README.md", out)?;
@@ -228,6 +235,91 @@ fn ascii_area_30d(per_day: &HashMap<Date, Totals>, last30: &[Date], height: usiz
     out
 }
 
+/// Render activity area chart to an SVG file using plotters.
+///
+/// - `per_day` as before
+/// - `dates` ordered oldest..newest
+/// - `out_path` e.g. "assets/activity.svg"
+/// - `width`/`height` in pixels
+pub(crate) fn render_activity_svg(
+    per_day: &HashMap<Date, Totals>,
+    dates: &[Date],
+    out_path: &str,
+    width: u32,
+    height: u32,
+) -> anyhow::Result<()> {
+    // prepare values as f64 minutes
+    let vals: Vec<f64> = dates.iter()
+        .map(|d| per_day.get(d).map(|t| (minutes(t.total()) as f64)).unwrap_or(0.0))
+        .collect();
+
+    // create a minimal placeholder when empty
+    if vals.is_empty() {
+        let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
+        root.fill(&WHITE)?;
+        root.present()?;
+        return Ok(());
+    }
+
+    // compute y-axis domain with small padding
+    let min_v = vals.iter().cloned().fold(f64::INFINITY, f64::min);
+    let max_v = vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let (y0, y1) = if (max_v - min_v).abs() < std::f64::EPSILON {
+        (0.0, max_v.max(1.0))
+    } else {
+        let pad = (max_v - min_v) * 0.07; // 7% padding
+        ((min_v - pad).max(0.0), max_v + pad)
+    };
+
+    let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    // IMPORTANT FIX: use the full index range 0..vals.len()
+    // (previous code used vals.len().saturating_sub(1) which produced a zero-length range
+    // when vals.len() == 1 and caused internal overflow in plotters)
+    let x_upper = vals.len(); // >= 1 here
+    let mut chart = ChartBuilder::on(&root)
+        .margin(8)
+        .x_label_area_size(0)
+        .y_label_area_size(40)
+        .right_y_label_area_size(0)
+        .build_cartesian_2d(0usize..x_upper, y0..y1)?;
+
+    // keep mesh minimal: no vertical grid, light y labels
+    chart
+        .configure_mesh()
+        .disable_mesh()
+        .y_desc("minutes / day")
+        // avoid too many x labels for wide ranges; show a few ticks instead
+        .x_labels((x_upper / 10).max(2))
+        .draw()?;
+
+    let points: Vec<(usize, f64)> = vals.iter().enumerate().map(|(i, &v)| (i, v)).collect();
+
+    // area fill with light alpha (0.15)
+    chart.draw_series(AreaSeries::new(
+        points.clone(),
+        0.0,
+        RGBAColor(70, 130, 180, 0.15),
+    ))?;
+
+    // stroke line (pass ShapeStyle value, not &ShapeStyle)
+    chart.draw_series(LineSeries::new(
+        points.clone().into_iter(),
+        RGBColor(70, 130, 180).stroke_width(2),
+    ))?;
+
+    // small dots for data points (pass ShapeStyle value)
+    chart.draw_series(
+        vals.iter().enumerate().map(|(i, &v)| {
+            Circle::new((i, v), 1, RGBColor(70, 130, 180).filled())
+        })
+    )?;
+
+    root.present()?;
+    Ok(())
+}
+
 fn render_md(
     now: OffsetDateTime,
     all_time: Totals,
@@ -238,14 +330,10 @@ fn render_md(
     streak_any: i32,
     streak_train: i32,
     streak_battle: i32,
-    ascii_area: &str,
+    _ascii_area: &str,
 ) -> anyhow::Result<String> {
     use std::fmt::Write;
     let version = env!("CARGO_PKG_VERSION");
-    let _repo = std::env::current_dir()
-        .ok()
-        .and_then(|p| p.into_os_string().into_string().ok())
-        .unwrap_or_else(|| ".".into());
 
     let mut s = String::new();
 
@@ -293,15 +381,11 @@ fn render_md(
     writeln!(s, "- Battle: {} days", streak_battle)?;
     writeln!(s)?;
 
-    // ASCII area
+    // Image-embedded Activity Graph (75 days)
     writeln!(s, "## Activity Graph")?;
-
-    writeln!(s, "```text")?;
-    writeln!(s, "{}", ascii_area)?;
-    writeln!(s, "```")?;
-
-// add a short caption below the block (outside code block)
-writeln!(s, "(total minutes per day)")?;
+    writeln!(s, "![Activity Graph](assets/activity.svg)")?;
+    writeln!(s, "(total minutes per day — last 75 days)")?;
+    writeln!(s)?;
 
     // Installation (clear steps)
     writeln!(s, "## Installation")?;
