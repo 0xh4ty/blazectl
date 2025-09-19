@@ -384,7 +384,7 @@ fn render_md(
     // Image-embedded Activity Graph (75 days)
     writeln!(s, "## Activity Graph")?;
     writeln!(s, "![Activity Graph](assets/activity.svg)")?;
-    writeln!(s, "(total minutes per day — last 75 days)")?;
+    writeln!(s, "(Total minutes per day for the last 75 days)")?;
     writeln!(s)?;
 
     // Installation (clear steps)
