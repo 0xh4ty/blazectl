@@ -6,7 +6,7 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-09-19T20:32:12.029464763Z
+- **Updated (UTC):** 2025-09-19T20:42:02.477176264Z
 - **All-time (Total):** 133h 01m
 - **All-time (Train):** 133h 01m
 - **All-time (Battle):** 0h 00m
@@ -26,14 +26,9 @@
 | 2025-09-18 | 8h 55m | 0h 00m | 8h 55m |
 | 2025-09-19 | 7h 25m | 0h 00m | 7h 25m |
 
-## Streaks
-- Any: 9 days
-- Train: 9 days
-- Battle: 0 days
-
 ## Activity Graph
 ![Activity Graph](assets/activity.svg)
-(total minutes per day — last 75 days)
+(Total minutes per day for the last 75 days)
 
 ## Installation
 1. **Install Rust**

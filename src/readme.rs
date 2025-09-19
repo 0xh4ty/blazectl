@@ -327,9 +327,9 @@ fn render_md(
     _last30: &Totals,
     last30_tag: &Totals,
     daily7: &[(Date, Totals)],
-    streak_any: i32,
-    streak_train: i32,
-    streak_battle: i32,
+    _streak_any: i32,
+    _streak_train: i32,
+    _streak_battle: i32,
     _ascii_area: &str,
 ) -> anyhow::Result<String> {
     use std::fmt::Write;
@@ -375,11 +375,11 @@ fn render_md(
     writeln!(s)?;
 
     // Streaks
-    writeln!(s, "## Streaks")?;
-    writeln!(s, "- Any: {} days", streak_any)?;
-    writeln!(s, "- Train: {} days", streak_train)?;
-    writeln!(s, "- Battle: {} days", streak_battle)?;
-    writeln!(s)?;
+    // writeln!(s, "## Streaks")?;
+    // writeln!(s, "- Any: {} days", streak_any)?;
+    // writeln!(s, "- Train: {} days", streak_train)?;
+    // writeln!(s, "- Battle: {} days", streak_battle)?;
+    // writeln!(s)?;
 
     // Image-embedded Activity Graph (75 days)
     writeln!(s, "## Activity Graph")?;
