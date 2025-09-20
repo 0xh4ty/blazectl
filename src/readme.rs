@@ -246,7 +246,7 @@ pub(crate) fn render_activity_svg(
     height: u32,
 ) -> anyhow::Result<()> {
     // Tunables
-    const TREND_WINDOW_DAYS: usize = 7; // 15..20 => single large hump over ~15-20 days
+    const TREND_WINDOW_DAYS: usize = 8; // 15..20 => single large hump over ~15-20 days
     const CHAIKIN_ITERS_ON_TREND: usize = 0; // set >0 to slightly round coarse control points
     const TREND_SAMPLES_PER_SEGMENT: usize = 50; // dense interpolation -> smooth curve
 
