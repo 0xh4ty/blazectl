@@ -6,7 +6,7 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2025-09-20T08:21:40.488496599Z
+- **Updated (UTC):** 2025-09-20T09:44:38.703166647Z
 - **All-time (Total):** 137h 15m
 - **All-time (Train):** 137h 15m
 - **All-time (Battle):** 0h 00m
@@ -28,7 +28,7 @@
 
 ## Activity Graph
 ![Activity Graph](assets/activity.svg)
-(Total minutes per day for the last 75 days)
+(Total hours per day for the last 75 days)
 
 ## Installation
 1. **Install Rust**
