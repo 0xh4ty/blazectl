@@ -250,6 +250,13 @@ pub(crate) fn render_activity_svg(
     const TREND_WINDOW_DAYS: usize = 8;
     const TREND_SAMPLES_PER_SEGMENT: usize = 50;
 
+    // color palette (user requested)
+    let bg = RGBColor(19, 23, 31);              // rgb(19, 22.5, 30.5) -> rounded
+    let text_col = RGBColor(194, 199, 208);     // #c2c7d0
+    let accent = RGBColor(1, 170, 255);         // #01aaff for the main graph line/points
+    let border_accent = RGBColor(88, 186, 236);
+    let trend_col = RGBColor(210, 20, 20);      // keep the red trend
+
     // raw per-day minutes
     let vals: Vec<f64> = dates
         .iter()
@@ -258,25 +265,35 @@ pub(crate) fn render_activity_svg(
     let n = vals.len();
     if n == 0 {
         let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
-        root.fill(&WHITE)?;
+        root.fill(&bg)?;
         root.present()?;
         return Ok(());
     }
 
-    // y domain in hours
+    // y domain in hours (we keep values in minutes but derive domain in hours)
     let min_v = vals.iter().cloned().fold(f64::INFINITY, f64::min) / 60.0;
     let max_v = vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max) / 60.0;
     let (y0, y1) = if (max_v - min_v).abs() < std::f64::EPSILON {
-        (0.0, max_v.max(0.5)) // at least half an hour visible
+        (0.0, max_v.max(0.5))
     } else {
         let pad = (max_v - min_v) * 0.07;
         ((min_v - pad).max(0.0), max_v + pad)
     };
 
     let root = SVGBackend::new(out_path, (width, height)).into_drawing_area();
-    root.fill(&WHITE)?;
+    // fill background with chosen dark color
+    root.fill(&bg)?;
 
-    // raw points scaled to hours
+    root.draw(&Rectangle::new(
+        [(0, 0), (width as i32 - 1, height as i32 - 1)],
+        ShapeStyle {
+            color: border_accent.to_rgba(),
+            filled: false,
+            stroke_width: 10,
+        },
+    ))?;
+
+    // raw points scaled to hours for plotting
     let points_raw: Vec<(f64, f64)> = vals
         .iter()
         .enumerate()
@@ -284,7 +301,7 @@ pub(crate) fn render_activity_svg(
         .collect();
     let x_upper_f = points_raw.len() as f64;
 
-    // chart on f64 x-axis so overlay curves can be fractional
+    // build chart using f64 domain
     let mut chart = ChartBuilder::on(&root)
         .margin(8)
         .x_label_area_size(0)
@@ -292,35 +309,37 @@ pub(crate) fn render_activity_svg(
         .right_y_label_area_size(0)
         .build_cartesian_2d(0f64..x_upper_f, y0..y1)?;
 
+    // configure mesh: keep grid minimal; style labels with text_col
     chart
         .configure_mesh()
         .disable_mesh()
         .y_desc("hours / day")
+        .y_label_formatter(&|v| format!("{:.1}", v))
+        .y_label_style(("sans-serif", 10).into_font().color(&text_col))
         .x_labels((points_raw.len() / 10).max(2))
+        .x_label_style(("sans-serif", 10).into_font().color(&text_col))
+        .label_style(("sans-serif", 11).into_font().color(&text_col))
+        .axis_style(text_col.stroke_width(1))   // <-- make axis lines use text color
         .draw()?;
 
-    // draw raw area + line + small dots (blue)
-    let blue_fill = RGBAColor(70, 130, 180, 0.12);
-    let blue_stroke = RGBColor(70, 130, 180).stroke_width(2);
+    // area + line + dots using accent color (accent filled area with low alpha)
+    let area_fill = RGBAColor(accent.0, accent.1, accent.2, 0.10);
+    let line_style = accent.stroke_width(2);
+    chart.draw_series(AreaSeries::new(points_raw.clone(), 0.0, area_fill))?;
+    chart.draw_series(LineSeries::new(points_raw.clone().into_iter(), line_style))?;
+    chart.draw_series(points_raw.iter().map(|&(x, y)| {
+        Circle::new((x, y), 1, accent.filled())
+    }))?;
 
-    chart.draw_series(AreaSeries::new(points_raw.clone(), 0.0, blue_fill))?;
-    chart.draw_series(LineSeries::new(points_raw.clone().into_iter(), blue_stroke))?;
-    chart.draw_series(
-        points_raw
-            .iter()
-            .map(|&(x, y)| Circle::new((x, y), 1, RGBColor(70, 130, 180).filled())),
-    )?;
-
-    // -------- build coarse trend points (still in minutes, convert to hours later) --------
+    // -------- build coarse trend points (minutes -> convert to hours here) --------
     let mut trend_pts: Vec<(f64, f64)> = Vec::new();
     let mut i = 0usize;
     while i < n {
         let end = (i + TREND_WINDOW_DAYS).min(n);
         let slice = &vals[i..end];
-        let sum: f64 = slice.iter().sum();
-        let avg = if slice.is_empty() { 0.0 } else { sum / (slice.len() as f64) };
+        let avg = if slice.is_empty() { 0.0 } else { slice.iter().sum::<f64>() / slice.len() as f64 };
         let center = (i as f64 + (end - 1) as f64) / 2.0;
-        trend_pts.push((center, avg / 60.0)); // convert here
+        trend_pts.push((center, avg / 60.0)); // convert to hours
         i = end;
     }
 
@@ -332,8 +351,7 @@ pub(crate) fn render_activity_svg(
         while j < n {
             let end = (j + step).min(n);
             let slice = &vals[j..end];
-            let sum: f64 = slice.iter().sum();
-            let avg = if slice.is_empty() { 0.0 } else { sum / (slice.len() as f64) };
+            let avg = if slice.is_empty() { 0.0 } else { slice.iter().sum::<f64>() / slice.len() as f64 };
             let center = (j as f64 + (end - 1) as f64) / 2.0;
             alt.push((center, avg / 60.0));
             j = end;
@@ -343,10 +361,9 @@ pub(crate) fn render_activity_svg(
         }
     }
 
-    // extrapolate endpoints
+    // extrapolate endpoints so trend covers full range
     let x_left = 0.0f64;
     let x_right = (n - 1) as f64;
-
     if trend_pts.is_empty() {
         trend_pts.push((x_left, vals[0] / 60.0));
         trend_pts.push((x_right, vals[n - 1] / 60.0));
@@ -355,8 +372,8 @@ pub(crate) fn render_activity_svg(
             if trend_pts.len() >= 2 {
                 let p0 = trend_pts[0];
                 let p1 = trend_pts[1];
-                let dx = p1.0 - p0.0;
-                let slope = if dx.abs() < 1e-9 { 0.0 } else { (p1.1 - p0.1) / dx };
+                let dx = (p1.0 - p0.0).max(1e-9);
+                let slope = (p1.1 - p0.1) / dx;
                 let y_at_left = p0.1 + slope * (x_left - p0.0);
                 trend_pts.insert(0, (x_left, y_at_left));
             } else {
@@ -371,8 +388,8 @@ pub(crate) fn render_activity_svg(
             if trend_pts.len() >= 2 {
                 let p_last = trend_pts[last_idx];
                 let p_prev = trend_pts[last_idx - 1];
-                let dx = p_last.0 - p_prev.0;
-                let slope = if dx.abs() < 1e-9 { 0.0 } else { (p_last.1 - p_prev.1) / dx };
+                let dx = (p_last.0 - p_prev.0).max(1e-9);
+                let slope = (p_last.1 - p_prev.1) / dx;
                 let y_at_right = p_last.1 + slope * (x_right - p_last.0);
                 trend_pts.push((x_right, y_at_right));
             } else {
@@ -383,20 +400,12 @@ pub(crate) fn render_activity_svg(
         }
     }
 
-    // spline smoothing
+    // Catmull-Rom spline (dense sampling)
     fn catmull_rom_spline(pts: &[(f64, f64)], samples: usize) -> Vec<(f64, f64)> {
-        if pts.len() < 2 {
-            return pts.to_vec();
-        }
+        if pts.len() < 2 { return pts.to_vec(); }
         let mut out = Vec::with_capacity(pts.len() * samples + 1);
         let idx = |i: isize, max: usize| -> usize {
-            if i < 0 {
-                0
-            } else if (i as usize) >= max {
-                max - 1
-            } else {
-                i as usize
-            }
+            if i < 0 { 0 } else if (i as usize) >= max { max - 1 } else { i as usize }
         };
         for ii in 0..(pts.len() - 1) {
             let p0 = pts[idx(ii as isize - 1, pts.len())];
@@ -407,22 +416,12 @@ pub(crate) fn render_activity_svg(
                 let t = s as f64 / (samples as f64);
                 let t2 = t * t;
                 let t3 = t2 * t;
-                let x = 0.5
-                    * (2.0 * p1.0
-                        + (-p0.0 + p2.0) * t
-                        + (2.0 * p0.0 - 5.0 * p1.0 + 4.0 * p2.0 - p3.0) * t2
-                        + (-p0.0 + 3.0 * p1.0 - 3.0 * p2.0 + p3.0) * t3);
-                let y = 0.5
-                    * (2.0 * p1.1
-                        + (-p0.1 + p2.1) * t
-                        + (2.0 * p0.1 - 5.0 * p1.1 + 4.0 * p2.1 - p3.1) * t2
-                        + (-p0.1 + 3.0 * p1.1 - 3.0 * p2.1 + p3.1) * t3);
+                let x = 0.5 * (2.0*p1.0 + (-p0.0 + p2.0)*t + (2.0*p0.0 - 5.0*p1.0 + 4.0*p2.0 - p3.0)*t2 + (-p0.0 + 3.0*p1.0 - 3.0*p2.0 + p3.0)*t3);
+                let y = 0.5 * (2.0*p1.1 + (-p0.1 + p2.1)*t + (2.0*p0.1 - 5.0*p1.1 + 4.0*p2.1 - p3.1)*t2 + (-p0.1 + 3.0*p1.1 - 3.0*p2.1 + p3.1)*t3);
                 out.push((x, y));
             }
         }
-        if let Some(last) = pts.last() {
-            out.push(*last);
-        }
+        if let Some(last) = pts.last() { out.push(*last); }
         out
     }
 
@@ -432,9 +431,11 @@ pub(crate) fn render_activity_svg(
         trend_pts.clone()
     };
 
-    let trend_style = RGBColor(210, 20, 20).stroke_width(4);
-    let trend_path = PathElement::new(trend_curve.clone(), trend_style);
-    chart.draw_series(std::iter::once(trend_path))?;
+    // draw trend (red) on top
+    chart.draw_series(std::iter::once(PathElement::new(
+        trend_curve,
+        trend_col.stroke_width(4),
+    )))?;
 
     root.present()?;
     Ok(())
