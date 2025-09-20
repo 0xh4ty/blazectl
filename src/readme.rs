@@ -283,7 +283,7 @@ pub(crate) fn render_activity_svg(
     let mut chart = ChartBuilder::on(&root)
         .margin(8)
         .x_label_area_size(0)
-        .y_label_area_size(40)
+        .y_label_area_size(50)
         .right_y_label_area_size(0)
         .build_cartesian_2d(0f64..x_upper_f, y0..y1)?;
 
