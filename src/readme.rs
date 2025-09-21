@@ -314,6 +314,7 @@ pub(crate) fn render_activity_svg(
         .configure_mesh()
         .disable_mesh()
         .y_desc("hours / day")
+        .axis_desc_style(("sans-serif", 14).into_font().color(&text_col))
         .y_label_formatter(&|v| format!("{:.1}", v))
         .y_label_style(("sans-serif", 10).into_font().color(&text_col))
         .x_labels((points_raw.len() / 10).max(2))
