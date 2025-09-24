@@ -100,3 +100,8 @@
 {"activity":"train","start":"2025-09-23T18:53:42.755773806Z","end":"2025-09-23T20:08:20.031091356Z","duration":"PT1H14M37S"}
 {"activity":"train","start":"2025-09-23T20:09:23.448036728Z","end":"2025-09-23T21:18:12.867967441Z","duration":"PT1H8M49S"}
 {"activity":"train","start":"2025-09-23T21:19:20.203763009Z","end":"2025-09-23T22:25:57.847154102Z","duration":"PT1H6M37S"}
+{"activity":"train","start":"2025-09-24T05:07:34.462855907Z","end":"2025-09-24T06:25:49.381527937Z","duration":"PT1H18M14S"}
+{"activity":"train","start":"2025-09-24T08:12:01.566892496Z","end":"2025-09-24T10:35:46.367943096Z","duration":"PT2H23M44S"}
+{"activity":"train","start":"2025-09-24T15:09:32.222098093Z","end":"2025-09-24T16:18:30.25257071Z","duration":"PT1H8M58S"}
+{"activity":"train","start":"2025-09-24T16:36:51.085884025Z","end":"2025-09-24T17:39:23.983446217Z","duration":"PT1H2M32S"}
+{"activity":"train","start":"2025-09-24T20:54:39.314797683Z","end":"2025-09-24T23:05:13.412423036Z","duration":"PT2H10M34S"}
