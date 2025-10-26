@@ -132,3 +132,10 @@
 {"activity":"train","start":"2025-10-25T01:00:07.171281102Z","end":"2025-10-25T02:56:47.672644423Z","duration":"PT1H56M40S"}
 {"activity":"train","start":"2025-10-25T03:50:54.966521258Z","end":"2025-10-25T04:22:59.082692402Z","duration":"PT0H32M4S"}
 {"activity":"train","start":"2025-10-25T18:11:40.053483266Z","end":"2025-10-25T18:40:46.744644633Z","duration":"PT0H29M6S"}
+{"activity":"train","start":"2025-10-25T19:13:16.621391726Z","end":"2025-10-25T19:15:36.285761715Z","duration":"PT0H2M19S"}
+{"activity":"train","start":"2025-10-25T19:49:33.683202354Z","end":"2025-10-25T20:46:22.061721251Z","duration":"PT0H56M48S"}
+{"activity":"train","start":"2025-10-25T21:03:16.063127021Z","end":"2025-10-25T22:02:40.520039558Z","duration":"PT0H59M24S"}
+{"activity":"train","start":"2025-10-26T04:27:25.797102821Z","end":"2025-10-26T06:36:45.316068968Z","duration":"PT2H9M19S"}
+{"activity":"train","start":"2025-10-26T09:09:16.790784816Z","end":"2025-10-26T10:07:05.23308794Z","duration":"PT0H57M48S"}
+{"activity":"train","start":"2025-10-26T17:11:40.033959812Z","end":"2025-10-26T18:24:06.84637578Z","duration":"PT1H12M26S"}
+{"activity":"train","start":"2025-10-26T20:07:48.300972694Z","end":"2025-10-26T22:50:27.388886229Z","duration":"PT2H42M39S"}
