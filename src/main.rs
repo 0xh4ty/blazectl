@@ -45,11 +45,9 @@ fn main() {
                         eprintln!("append error: {e}");
                         std::process::exit(1);
                     }
-                    // fire-and-forget: README + daily commit
-                    std::thread::spawn(|| {
-                        if let Err(e) = readme::render_all() { eprintln!("readme: {e}"); }
-                        if let Err(e) = gitops::auto_commit_if_due() { eprintln!("git: {e}"); }
-                    }).join().ok(); // for v0, just join; switch to detached later
+                    // Synchronous: README + daily commit
+                    if let Err(e) = readme::render_all() { eprintln!("readme: {e}"); }
+                    if let Err(e) = gitops::auto_commit_if_due() { eprintln!("git: {e}"); }
                 }
                 Ok(None) => {
                     println!("No active `{tag}` session.");
