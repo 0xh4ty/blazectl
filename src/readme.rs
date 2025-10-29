@@ -1,3 +1,4 @@
+use std::fs::File;
 use anyhow::Result;
 use std::{collections::HashMap, fs};
 use time::{Duration, OffsetDateTime, Date, format_description::well_known::Rfc3339};
@@ -439,6 +440,10 @@ pub(crate) fn render_activity_svg(
     )))?;
 
     root.present()?;
+
+    let f = File::open(out_path)?;
+    f.sync_all()?;
+
     Ok(())
 }
 
