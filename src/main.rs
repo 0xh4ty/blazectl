@@ -46,7 +46,26 @@ fn main() {
                         std::process::exit(1);
                     }
                     // Synchronous: README + daily commit
+                    // NOTE:
+                    // SVG + README writes are buffered. We do a naive mtime poll before auto-commit.
+                    // This is not perfectly reliable under fs writeback delays.
+                    // Acceptable for personal workflow; revisit if failures become annoying.
+
+                    let before = std::fs::metadata("assets/activity.svg")
+                        .ok()
+                        .and_then(|m| m.modified().ok());
+
                     if let Err(e) = readme::render_all() { eprintln!("readme: {e}"); }
+
+                    for _ in 0..20 {
+                        let now = std::fs::metadata("assets/activity.svg")
+                            .ok()
+                            .and_then(|m| m.modified().ok());
+
+                        if now != before { break; }
+                        std::thread::sleep(std::time::Duration::from_millis(100));
+                    }
+
                     if let Err(e) = gitops::auto_commit_if_due() { eprintln!("git: {e}"); }
                 }
                 Ok(None) => {
