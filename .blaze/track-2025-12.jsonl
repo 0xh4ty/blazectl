@@ -61,3 +61,7 @@
 {"activity":"battle","start":"2025-12-23T20:38:54.568304901Z","end":"2025-12-23T21:07:41.430405944Z","duration":"PT0H28M46S"}
 {"activity":"train","start":"2025-12-23T22:46:33.608853149Z","end":"2025-12-23T23:18:21.115681568Z","duration":"PT0H31M47S"}
 {"activity":"battle","start":"2025-12-24T04:30:04.528641884Z","end":"2025-12-24T06:01:23.24384332Z","duration":"PT1H31M18S"}
+{"activity":"train","start":"2025-12-24T10:53:23.578787058Z","end":"2025-12-24T11:25:25.014500698Z","duration":"PT0H32M1S"}
+{"activity":"battle","start":"2025-12-25T02:51:15.442251233Z","end":"2025-12-25T03:26:26.977409909Z","duration":"PT0H35M11S"}
+{"activity":"battle","start":"2025-12-25T04:41:09.884924627Z","end":"2025-12-25T05:43:57.505046967Z","duration":"PT1H2M47S"}
+{"activity":"battle","start":"2025-12-25T06:08:20.526438158Z","end":"2025-12-25T06:35:56.854939643Z","duration":"PT0H27M36S"}
