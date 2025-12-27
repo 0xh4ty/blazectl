@@ -70,3 +70,8 @@
 {"activity":"battle","start":"2025-12-26T03:30:20.387134368Z","end":"2025-12-26T04:40:58.805304355Z","duration":"PT1H10M38S"}
 {"activity":"battle","start":"2025-12-26T05:39:14.937715763Z","end":"2025-12-26T06:27:54.520906846Z","duration":"PT0H48M39S"}
 {"activity":"train","start":"2025-12-26T06:28:31.690338756Z","end":"2025-12-26T07:05:15.994296889Z","duration":"PT0H36M44S"}
+{"activity":"train","start":"2025-12-26T09:47:20.949808657Z","end":"2025-12-26T12:14:02.865480806Z","duration":"PT2H26M41S"}
+{"activity":"train","start":"2025-12-27T01:24:58.848294374Z","end":"2025-12-27T02:05:00.091155919Z","duration":"PT0H40M1S"}
+{"activity":"train","start":"2025-12-27T02:06:58.633846627Z","end":"2025-12-27T02:18:39.584802666Z","duration":"PT0H11M40S"}
+{"activity":"train","start":"2025-12-27T03:04:46.202861072Z","end":"2025-12-27T06:42:48.705530282Z","duration":"PT3H38M2S"}
+{"activity":"train","start":"2025-12-27T09:47:15.275516348Z","end":"2025-12-27T11:05:55.687679431Z","duration":"PT1H18M40S"}
