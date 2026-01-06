@@ -24,3 +24,12 @@
 {"activity":"train","start":"2026-01-04T09:16:59.611500764Z","end":"2026-01-04T10:28:23.641850235Z","duration":"PT1H11M24S"}
 {"activity":"train","start":"2026-01-04T19:39:34.152676515Z","end":"2026-01-04T20:25:04.09034387Z","duration":"PT0H45M29S"}
 {"activity":"train","start":"2026-01-05T04:23:04.497240116Z","end":"2026-01-05T05:43:29.126814783Z","duration":"PT1H20M24S"}
+{"activity":"train","start":"2026-01-05T08:42:17.207313053Z","end":"2026-01-05T11:13:26.916155984Z","duration":"PT2H31M9S"}
+{"activity":"train","start":"2026-01-05T22:22:16.841575748Z","end":"2026-01-05T22:52:38.541057791Z","duration":"PT0H30M21S"}
+{"activity":"battle","start":"2026-01-06T00:05:16.550775628Z","end":"2026-01-06T00:11:53.699121354Z","duration":"PT0H6M37S"}
+{"activity":"battle","start":"2026-01-06T00:42:45.803271129Z","end":"2026-01-06T01:46:53.210584246Z","duration":"PT1H4M7S"}
+{"activity":"battle","start":"2026-01-06T01:47:18.658508162Z","end":"2026-01-06T01:59:43.854839248Z","duration":"PT0H12M25S"}
+{"activity":"battle","start":"2026-01-06T02:02:31.860873065Z","end":"2026-01-06T02:26:03.287176781Z","duration":"PT0H23M31S"}
+{"activity":"battle","start":"2026-01-06T02:40:40.833896988Z","end":"2026-01-06T04:47:26.293141832Z","duration":"PT2H6M45S"}
+{"activity":"battle","start":"2026-01-06T05:24:03.201605374Z","end":"2026-01-06T05:24:05.082729211Z","duration":"PT0H0M1S"}
+{"activity":"train","start":"2026-01-06T05:41:04.203808933Z","end":"2026-01-06T06:11:53.813564552Z","duration":"PT0H30M49S"}
