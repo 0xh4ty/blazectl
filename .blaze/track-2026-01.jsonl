@@ -42,3 +42,7 @@
 {"activity":"battle","start":"2026-01-07T04:55:02.945162151Z","end":"2026-01-07T05:20:18.022611241Z","duration":"PT0H25M15S"}
 {"activity":"train","start":"2026-01-07T05:20:21.807111807Z","end":"2026-01-07T06:10:15.448712809Z","duration":"PT0H49M53S"}
 {"activity":"battle","start":"2026-01-07T19:55:08.840888415Z","end":"2026-01-07T20:50:05.341536312Z","duration":"PT0H54M56S"}
+{"activity":"battle","start":"2026-01-07T22:01:41.622149303Z","end":"2026-01-07T22:20:08.754986617Z","duration":"PT0H18M27S"}
+{"activity":"train","start":"2026-01-08T04:30:11.768095241Z","end":"2026-01-08T05:38:21.492710322Z","duration":"PT1H8M9S"}
+{"activity":"train","start":"2026-01-08T09:09:41.50395885Z","end":"2026-01-08T10:45:26.042994969Z","duration":"PT1H35M44S"}
+{"activity":"battle","start":"2026-01-09T00:13:25.40174375Z","end":"2026-01-09T02:08:12.136075613Z","duration":"PT1H54M46S"}
