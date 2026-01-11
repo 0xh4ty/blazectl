@@ -52,3 +52,10 @@
 {"activity":"train","start":"2026-01-09T18:34:34.898323061Z","end":"2026-01-09T20:36:47.668324387Z","duration":"PT2H2M12S"}
 {"activity":"train","start":"2026-01-09T20:36:53.623027621Z","end":"2026-01-09T21:00:09.967673736Z","duration":"PT0H23M16S"}
 {"activity":"train","start":"2026-01-10T03:20:59.734805733Z","end":"2026-01-10T04:31:31.532071138Z","duration":"PT1H10M31S"}
+{"activity":"train","start":"2026-01-10T04:57:42.030265143Z","end":"2026-01-10T06:51:30.426082104Z","duration":"PT1H53M48S"}
+{"activity":"train","start":"2026-01-10T08:56:50.123283896Z","end":"2026-01-10T10:01:43.194484542Z","duration":"PT1H4M53S"}
+{"activity":"train","start":"2026-01-10T10:01:47.577756489Z","end":"2026-01-10T11:13:38.755909779Z","duration":"PT1H11M51S"}
+{"activity":"train","start":"2026-01-10T16:01:59.28331152Z","end":"2026-01-10T17:12:39.75254516Z","duration":"PT1H10M40S"}
+{"activity":"train","start":"2026-01-11T02:19:07.903294821Z","end":"2026-01-11T02:51:54.208057617Z","duration":"PT0H32M46S"}
+{"activity":"train","start":"2026-01-11T04:56:23.87977658Z","end":"2026-01-11T05:19:30.491544931Z","duration":"PT0H23M6S"}
+{"activity":"train","start":"2026-01-11T05:21:14.446845125Z","end":"2026-01-11T06:31:37.4380215Z","duration":"PT1H10M22S"}
