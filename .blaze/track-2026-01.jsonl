@@ -78,3 +78,7 @@
 {"activity":"train","start":"2026-01-16T04:24:40.635750116Z","end":"2026-01-16T05:03:11.959156994Z","duration":"PT0H38M31S"}
 {"activity":"train","start":"2026-01-16T05:20:15.326065885Z","end":"2026-01-16T06:28:03.185712801Z","duration":"PT1H7M47S"}
 {"activity":"train","start":"2026-01-16T19:54:29.495630476Z","end":"2026-01-16T21:17:22.539772237Z","duration":"PT1H22M53S"}
+{"activity":"train","start":"2026-01-17T04:33:18.934695795Z","end":"2026-01-17T05:36:43.494148789Z","duration":"PT1H3M24S"}
+{"activity":"train","start":"2026-01-17T05:53:29.434717935Z","end":"2026-01-17T06:40:29.186472158Z","duration":"PT0H46M59S"}
+{"activity":"train","start":"2026-01-17T19:58:08.270784261Z","end":"2026-01-17T20:40:22.245581291Z","duration":"PT0H42M13S"}
+{"activity":"train","start":"2026-01-17T21:51:21.842344471Z","end":"2026-01-17T22:45:26.824921775Z","duration":"PT0H54M4S"}
