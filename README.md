@@ -6,25 +6,25 @@
 
 ## Field Report
 
-- **Updated (UTC):** 2026-06-04T05:11:59.846576962Z
-- **All-time (Total):** 1257h 32m
-- **All-time (Train):** 1237h 41m
+- **Updated (UTC):** 2026-06-05T10:58:06.006529695Z
+- **All-time (Total):** 1261h 25m
+- **All-time (Train):** 1241h 34m
 - **All-time (Battle):** 19h 51m
 
 ## Per-tag (last 30d)
-- Train: 79h 12m
+- Train: 81h 16m
 - Battle: 0h 00m
 
 ## Daily (last 7 days)
 | Date       | Train | Battle | Total |
 |------------|-------|--------|-------|
-| 2026-05-29 | 0h 40m | 0h 00m | 0h 40m |
 | 2026-05-30 | 0h 00m | 0h 00m | 0h 00m |
 | 2026-05-31 | 0h 00m | 0h 00m | 0h 00m |
 | 2026-06-01 | 1h 12m | 0h 00m | 1h 12m |
 | 2026-06-02 | 2h 58m | 0h 00m | 2h 58m |
 | 2026-06-03 | 6h 21m | 0h 00m | 6h 21m |
-| 2026-06-04 | 0h 58m | 0h 00m | 0h 58m |
+| 2026-06-04 | 2h 40m | 0h 00m | 2h 40m |
+| 2026-06-05 | 2h 10m | 0h 00m | 2h 10m |
 
 ## Activity Graph
 ![Activity Graph](assets/activity.svg)
