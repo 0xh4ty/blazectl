@@ -39,3 +39,7 @@
 {"activity":"train","start":"2026-06-17T04:17:46.801883638Z","end":"2026-06-17T06:15:51.849816343Z","duration":"PT1H58M5S"}
 {"activity":"train","start":"2026-06-17T10:50:53.730944425Z","end":"2026-06-17T11:49:43.670146585Z","duration":"PT0H58M49S"}
 {"activity":"train","start":"2026-06-18T04:44:35.905108022Z","end":"2026-06-18T07:52:27.438709668Z","duration":"PT3H7M51S"}
+{"activity":"train","start":"2026-06-18T12:29:11.256969422Z","end":"2026-06-18T14:20:13.267348278Z","duration":"PT1H51M2S"}
+{"activity":"train","start":"2026-06-19T04:51:26.204958913Z","end":"2026-06-19T05:10:43.511876843Z","duration":"PT0H19M17S"}
+{"activity":"train","start":"2026-06-19T05:56:42.627945991Z","end":"2026-06-19T06:05:19.046123261Z","duration":"PT0H8M36S"}
+{"activity":"train","start":"2026-06-19T18:06:46.937673766Z","end":"2026-06-19T21:57:33.21546848Z","duration":"PT3H50M46S"}
